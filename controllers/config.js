@@ -77,7 +77,7 @@ module.exports = {
     Object.keys(diff).map((changedConfigName) => {
       formattedDiff.fileConfig[changedConfigName] = fileConfig[changedConfigName];
       formattedDiff.databaseConfig[changedConfigName] = databaseConfig[changedConfigName];
-    })
+    });
 
     return formattedDiff;
   },

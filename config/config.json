@@ -4,7 +4,8 @@
   "importOnBootstrap": false,
   "include": [
     "core-store",
-    "role-permissions"
+    "role-permissions",
+    "i18n-locale"
   ],
   "exclude": [
     "core-store.plugin_users-permissions_grant"
