@@ -22,9 +22,9 @@ module.exports = {
     const shouldExclude = strapi.plugins['config-sync'].config.exclude.includes(`${configType}.${configName}`);
     if (shouldExclude) return;
 
-    // Check if the JSON content should be minified. 
-    const json = 
-      !strapi.plugins['config-sync'].config.minify ? 
+    // Check if the JSON content should be minified.
+    const json =
+      !strapi.plugins['config-sync'].config.minify ?
         JSON.stringify(fileContents, null, 2)
         : JSON.stringify(fileContents);
 
@@ -93,8 +93,8 @@ module.exports = {
       let fileConfigs = {};
 
       await Promise.all(configFiles.map(async (file) => {
-        const type = file.split('.')[0]; // Grab the first part of the filename.
-        const name = file.split(/\.(.+)/)[1].split('.').slice(0, -1).join('.'); // Grab the rest of the filename minus the file extension.
+        const type = file.split('.')[0].replace('##', '::'); // Grab the first part of the filename.
+        const name = file.split(/\.(.+)/)[1].split('.').slice(0, -1).join('.').replace('##', '::'); // Grab the rest of the filename minus the file extension.
 
         if (
           configType && configType !== type ||
@@ -201,6 +201,6 @@ module.exports = {
    * @returns {void}
    */
    exportSingleConfig: async (configType, configName) => {
-    
+   
   },
 };

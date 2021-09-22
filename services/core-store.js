@@ -45,7 +45,7 @@ module.exports = {
       ) {
         await strapi.plugins['config-sync'].services.main.deleteConfigFile(configName);
       } else {
-        await strapi.plugins['config-sync'].services.main.writeConfigFile(configPrefix, currentConfig.key, currentConfig);
+        await strapi.plugins['config-sync'].services.main.writeConfigFile(configPrefix, currentConfig.key.replace('::', '##'), currentConfig);
       }
     }));
   },
