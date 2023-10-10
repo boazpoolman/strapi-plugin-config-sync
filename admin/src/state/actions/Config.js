@@ -7,7 +7,7 @@
 import { request } from '@strapi/helper-plugin';
 
 export function getAllConfigDiff(toggleNotification) {
-  return async function(dispatch) {
+  return async function (dispatch) {
     dispatch(setLoadingState(true));
     try {
       const configDiff = await request('/config-sync/diff', { method: 'GET' });
@@ -38,7 +38,7 @@ export function setConfigPartialDiffInState(config) {
 }
 
 export function exportAllConfig(partialDiff, toggleNotification) {
-  return async function(dispatch) {
+  return async function (dispatch) {
     dispatch(setLoadingState(true));
     try {
       const { message } = await request('/config-sync/export', {
@@ -55,8 +55,27 @@ export function exportAllConfig(partialDiff, toggleNotification) {
   };
 }
 
+export function downloadZip(toggleNotification) {
+  return async function (dispatch) {
+    dispatch(setLoadingState(true));
+    try {
+      const { message, url } = await request('/config-sync/zip', {
+        method: 'GET'
+      });
+      toggleNotification({ type: 'success', message });
+      if (url) {
+        window.location = url;
+      }
+      dispatch(setLoadingState(false));
+    } catch (err) {
+      toggleNotification({ type: 'warning', message: { id: 'notification.error' } });
+      dispatch(setLoadingState(false));
+    }
+  };
+}
+
 export function importAllConfig(partialDiff, force, toggleNotification) {
-  return async function(dispatch) {
+  return async function (dispatch) {
     dispatch(setLoadingState(true));
     try {
       const { message } = await request('/config-sync/import', {
@@ -85,7 +104,7 @@ export function setLoadingState(value) {
 }
 
 export function getAppEnv(toggleNotification) {
-  return async function(dispatch) {
+  return async function (dispatch) {
     try {
       const envVars = await request('/config-sync/app-env', {
         method: 'GET',

@@ -5,6 +5,7 @@ const fs = require('fs');
 const util = require('util');
 const difference = require('../utils/getObjectDiff');
 const { logMessage } = require('../utils');
+const child_process = require("child_process");
 
 /**
  * Main services for config import/export.
@@ -54,7 +55,7 @@ module.exports = () => ({
    * @param {string} configName - The name of the config file.
    * @returns {void}
    */
-   deleteConfigFile: async (configName) => {
+  deleteConfigFile: async (configName) => {
     // Check if the config should be excluded.
     const shouldExclude = !isEmpty(strapi.config.get('plugin.config-sync.excludedConfig').filter((option) => configName.startsWith(option)));
     if (shouldExclude) return;
@@ -63,6 +64,33 @@ module.exports = () => ({
     configName = configName.replace(/:/g, "#").replace(/\//g, "$");
 
     fs.unlinkSync(`${strapi.config.get('plugin.config-sync.syncDir')}${configName}.json`);
+  },
+
+  /**
+   * Zip config files.
+   *
+   * @param {string} configName - The name of the config file.
+   * @returns {void}
+   */
+  zipConfigFiles: async () => {
+    const fileName = `config-${new Date().toJSON()}.zip`
+    child_process.execSync(`zip -r ${fileName} *`, {
+      cwd: strapi.config.get('plugin.config-sync.syncDir')
+    });
+    const fullFilePath = `${strapi.config.get('plugin.config-sync.syncDir')}${fileName}`
+    const stats = fs.statSync(fullFilePath);
+
+    const result = await strapi.plugins.upload.services.upload.upload({
+      data: {}, //mandatory declare the data(can be empty), otherwise it will give you an undefined error. This parameters will be used to relate the file with a collection.
+      files: {
+        path: fullFilePath,
+        name: `configs/${fileName}`,
+        type: 'application/zip', // mime type of the file
+        size: stats.size,
+      },
+    });
+    fs.unlinkSync(fullFilePath);
+    return { url: result[0].url, message: 'Success' };
   },
 
   /**
@@ -191,7 +219,7 @@ module.exports = () => ({
    * @param {object} onSuccess - Success callback to run on each single successfull import.
    * @returns {void}
    */
-   exportAllConfig: async (configType = null, onSuccess) => {
+  exportAllConfig: async (configType = null, onSuccess) => {
     const fileConfig = await strapi.plugin('config-sync').service('main').getAllConfigFromFiles();
     const databaseConfig = await strapi.plugin('config-sync').service('main').getAllConfigFromDatabase();
 
@@ -242,8 +270,8 @@ module.exports = () => ({
    *
    * @returns {void}
    */
-   exportSingleConfig: async (configName, onSuccess) => {
-     // Check if the config should be excluded.
+  exportSingleConfig: async (configName, onSuccess) => {
+    // Check if the config should be excluded.
     const shouldExclude = !isEmpty(strapi.config.get('plugin.config-sync.excludedConfig').filter((option) => configName.startsWith(option)));
     if (shouldExclude) return;
 

@@ -7,7 +7,7 @@ import { Map } from 'immutable';
 import { useNotification } from '@strapi/helper-plugin';
 
 import ConfirmModal from '../ConfirmModal';
-import { exportAllConfig, importAllConfig } from '../../state/actions/Config';
+import { downloadZip, exportAllConfig, importAllConfig } from '../../state/actions/Config';
 
 const ActionButtons = () => {
   const dispatch = useDispatch();
@@ -30,6 +30,7 @@ const ActionButtons = () => {
     <ActionButtonsStyling>
       <Button disabled={isEmpty(partialDiff)} onClick={() => openModal('import')}>Import</Button>
       <Button disabled={isEmpty(partialDiff)} onClick={() => openModal('export')}>Export</Button>
+      <Button onClick={() => dispatch(downloadZip(toggleNotification))}>Download Config</Button>
       {!isEmpty(partialDiff) && (
         <h4 style={{ display: 'inline' }}>{Object.keys(partialDiff).length} {Object.keys(partialDiff).length === 1 ? "config change" : "config changes"}</h4>
       )}

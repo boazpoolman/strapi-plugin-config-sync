@@ -29,6 +29,14 @@ module.exports = {
     },
     {
       method: "GET",
+      path: "/zip",
+      handler: "config.zipConfig",
+      config: {
+        policies: [],
+      },
+    },
+    {
+      method: "GET",
       path: "/app-env",
       handler: "config.getAppEnv",
       config: {

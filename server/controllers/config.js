@@ -84,6 +84,19 @@ module.exports = {
     return strapi.plugin('config-sync').service('main').getFormattedDiff();
   },
 
+  zipConfig: async (ctx) => {
+    // Check for existance of the config file sync dir.
+    if (!fs.existsSync(strapi.config.get('plugin.config-sync.syncDir'))) {
+      ctx.send({
+        message: 'No config files were found.',
+      });
+
+      return;
+    }
+
+    return strapi.plugin('config-sync').service('main').zipConfigFiles();
+  },
+
   /**
    * Get the current Strapi env.
    * @returns {string} The current Strapi environment.
